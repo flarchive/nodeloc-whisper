@@ -1,0 +1,89 @@
+<?php
+/**
+ *
+ *  This file is part of nodeloc/whisper
+ *
+ *  Copyright (c) 2020 Nodeloc.
+ *
+ *  For the full copyright and license information, please view the license.md
+ *  file that was distributed with this source code.
+ *
+ */
+
+namespace Nodeloc\Whisper\Commands;
+
+use Flarum\Notification\NotificationSyncer;
+use Flarum\User\Exception\PermissionDeniedException;
+use Flarum\User\User;
+use Nodeloc\Whisper\Conversation;
+use Nodeloc\Whisper\ConversationUser;
+use Nodeloc\Whisper\Message;
+use Nodeloc\Whisper\Notifications\NewPrivateMessageBlueprint;
+use Pusher\Pusher;
+
+class NewMessageHandler
+{
+    protected $notifications;
+
+    public function __construct(NotificationSyncer $notifications)
+    {
+        $this->notifications = $notifications;
+    }
+
+    public function handle(NewMessage $command)
+    {
+        $actor = $command->actor;
+        $data = $command->data;
+        $conversationId = $command->conversationId;
+
+        if ($conversationId) {
+            $conversation = Conversation::find($conversationId);
+        } else {
+            $conversation = Conversation::find($data['attributes']['conversationId']);
+        }
+
+        if (!$conversation->recipients()->where('user_id', $actor->id)->get()) {
+            throw new PermissionDeniedException;
+        }
+
+        $message = Message::newMessage($data['attributes']['messageContents'], $actor->id,
+            $conversation->id);
+
+        $conversation->increment('total_messages');
+
+        $message->number = $conversation->total_messages;
+
+        $message->save();
+
+        foreach (ConversationUser::where('conversation_id', $conversation->id)->pluck('user_id')->all() as $userId) {
+            if ($userId === $actor->id) {
+                continue;
+            }
+            $recipient = User::find($userId);
+            User::find($userId)->increment('unread_messages');
+            $this->pushNewMessage($userId, $message, $conversation->id);
+            $this->sendNewMessageNotification($message, $conversation, $actor, $recipient);
+        }
+
+        return $message;
+    }
+
+    public function pushNewMessage($userId, $message, $conversationId)
+    {
+        if (app()->bound(Pusher::class)) {
+            app(Pusher::class)->trigger('private-user' . $userId, 'newMessage', [
+                'id' => $message->id,
+                'message' => json_decode($message->message),
+                'createdAt' => (new \DateTime($message->created_at))->format(\DateTime::RFC3339),
+                'conversationId' => $conversationId
+            ]);
+        }
+    }
+
+    public function sendNewMessageNotification($message, $conversation, $actor, $recipient) {
+        $this->notifications->sync(
+            new NewPrivateMessageBlueprint($message, $conversation, $actor),
+            [$recipient]
+        );
+    }
+}

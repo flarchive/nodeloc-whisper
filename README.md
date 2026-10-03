@@ -2,13 +2,18 @@
 
 > **Read-only archive of released versions of nodeloc/whisper.** Not for installation: use [Packagist](https://packagist.org/packages/nodeloc/whisper) or the [upstream repository](https://github.com/nodeloc/whisper).
 
-**0** versions archived · Latest: [`0.0.6`](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.6) · License: `MIT` · Flarum: `^1.0.2`
+**6** versions archived · Latest: [`0.0.6`](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.6) · License: `MIT` · Flarum: `^1.0.2`
 
 ## Archived Versions
 
 | Version | Released | Flarum | Source |
 |---|---|---|---|
-| — | — | — | — |
+| `0.0.1` | 2024-01-29 | `^1.0.2` | [Browse](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.1) |
+| `0.0.2` | 2024-01-29 | `^1.0.2` | [Browse](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.2) |
+| `0.0.3` | 2024-01-29 | `^1.0.2` | [Browse](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.3) |
+| `0.0.4` | 2024-01-30 | `^1.0.2` | [Browse](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.4) |
+| `0.0.5` | 2025-02-26 | `^1.0.2` | [Browse](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.5) |
+| `0.0.6` | 2025-02-26 | `^1.0.2` | [Browse](https://github.com/flarchive/nodeloc-whisper/tree/archive/v0.0.6) |
 
 Catalog entry: [packages/nodeloc-whisper.json](https://github.com/flarchive/archive-index/blob/main/packages/nodeloc-whisper.json)
 
